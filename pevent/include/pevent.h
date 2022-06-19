@@ -37,6 +37,21 @@
 #include <stddef.h>
 #include <string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* A macro to mark functions as exported. */
+#ifndef pev_export
+#  if defined(__GNUC__)
+#    define pev_export __attribute__((visibility("default")))
+#  elif defined(_MSC_VER)
+#    define pev_export __declspec(dllimport)
+#  else
+#    error "unknown compiler"
+#  endif
+#endif
+
 
 /* A perf event configuration. */
 struct pev_config {
@@ -224,7 +239,7 @@ static inline void pev_event_init(struct pev_event *event)
  * Returns -pte_bad_config if @config->time_mult is zero.
  * Returns -pte_internal if @tsc or @config is NULL.
  */
-extern int pev_time_to_tsc(uint64_t *tsc, uint64_t time,
+extern pev_export int pev_time_to_tsc(uint64_t *tsc, uint64_t time,
 			   const struct pev_config *config);
 
 /* Convert TSC to perf_event time.
@@ -236,7 +251,7 @@ extern int pev_time_to_tsc(uint64_t *tsc, uint64_t time,
  * Returns -pte_bad_config if @config->time_mult is zero.
  * Returns -pte_internal if @time or @config is NULL.
  */
-extern int pev_time_from_tsc(uint64_t *time, uint64_t tsc,
+extern pev_export int pev_time_from_tsc(uint64_t *time, uint64_t tsc,
 			     const struct pev_config *config);
 
 /* Read a perf_event record.
@@ -248,7 +263,7 @@ extern int pev_time_from_tsc(uint64_t *time, uint64_t tsc,
  * Returns -pte_eos if the event does not fit into [@begin; @end[.
  * Returns -pte_internal if @event, @config, @begin, or @end is NULL.
  */
-extern int pev_read(struct pev_event *event, const uint8_t *begin,
+extern pev_export int pev_read(struct pev_event *event, const uint8_t *begin,
 		    const uint8_t *end, const struct pev_config *config);
 
 /* Write a perf_event record.
@@ -262,7 +277,11 @@ extern int pev_read(struct pev_event *event, const uint8_t *begin,
  * Returns -pte_eos if the event does not fit into [@begin; @end[.
  * Returns -pte_internal if @begin, @end, @event, or @config is NULL.
  */
-extern int pev_write(const struct pev_event *event, uint8_t *begin,
+extern pev_export int pev_write(const struct pev_event *event, uint8_t *begin,
 		     uint8_t *end, const struct pev_config *config);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PEVENT_H */

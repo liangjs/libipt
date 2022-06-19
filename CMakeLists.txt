@@ -72,21 +72,21 @@ endif (FEATURE_THREADS)
 
 option(DEVBUILD "Enable compiler warnings and turn them into errors." OFF)
 
-option(PTDUMP "Enable ptdump, a packet dumper")
-option(PTXED  "Enable ptxed, an instruction flow dumper")
+option(PTDUMP "Enable ptdump, a packet dumper" ON)
+option(PTXED  "Enable ptxed, an instruction flow dumper" ON)
 option(PTTC   "Enable pttc, a test compiler")
 option(PTSEG  "Enable ptseg, a PSB segment finder")
 option(PTUNIT "Enable ptunit, a unit test system and libipt unit tests")
 option(MAN "Enable man pages (requires pandoc)." OFF)
-option(SIDEBAND "Enable libipt-sb, a sideband correlation library")
+option(SIDEBAND "Enable libipt-sb, a sideband correlation library" ON)
 option(BUILD_SHARED_LIBS "Build the shared library" ON)
 
 if (SIDEBAND)
-  option(PEVENT "Enable perf_event sideband support." OFF)
+  option(PEVENT "Enable perf_event sideband support." ON)
 endif (SIDEBAND)
 
 if (PTXED OR PEVENT)
-  option(FEATURE_ELF "Support ELF files." OFF)
+  option(FEATURE_ELF "Support ELF files." ON)
 endif (PTXED OR PEVENT)
 
 set(PTT OFF)
