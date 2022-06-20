@@ -36,16 +36,8 @@
 
 static uint64_t pt_pkt_read_value(const uint8_t *pos, int size)
 {
-	uint64_t val;
-	int idx;
-
-	for (val = 0, idx = 0; idx < size; ++idx) {
-		uint64_t byte = *pos++;
-
-		byte <<= (idx * 8);
-		val |= byte;
-	}
-
+	uint64_t val = *(uint64_t*)pos;
+	val &= (~0ull) >> (64 - size * 8);
 	return val;
 }
 
@@ -163,17 +155,11 @@ int pt_pkt_read_ip(struct pt_packet_ip *packet, const uint8_t *pos,
 
 static uint8_t pt_pkt_tnt_bit_size(uint64_t payload)
 {
-	uint8_t size;
-
 	/* The payload bit-size is the bit-index of the payload's stop-bit,
 	 * which itself is not part of the payload proper.
 	 */
-	for (size = 0; ; size += 1) {
-		payload >>= 1;
-		if (!payload)
-			break;
-	}
-
+	uint64_t size;
+	__asm__ ("bsrq %0, %1" : "=r"(payload), "=r"(size) : "0"(payload), "1"(size));
 	return size;
 }
 
