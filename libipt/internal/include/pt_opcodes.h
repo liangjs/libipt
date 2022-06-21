@@ -29,7 +29,6 @@
 #ifndef PT_OPCODES_H
 #define PT_OPCODES_H
 
-
 /* A one byte opcode. */
 enum pt_opcode {
 	pt_opc_pad		= 0x00,

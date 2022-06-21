@@ -767,9 +767,531 @@ static int pt_pkt_decode_ptw(struct pt_packet_decoder *decoder,
 	return size;
 }
 
+#define USE_DISPATCH
+
 static int pt_pkt_decode(struct pt_packet_decoder *decoder,
 			 struct pt_packet *packet)
 {
+#ifdef USE_DISPATCH
+static void *pt_dispatch_level_1[256] = {
+		&&handle_pt_opc_pad,			// 00000000
+		&&handle_pt_opc_tip_pgd,	// 00000001
+		&&handle_pt_opc_ext,			// 00000010
+		&&handle_pt_opc_cyc,			// 00000011
+		&&handle_pt_opc_tnt_8,		// 00000100
+		&&handle_pt_opc_bad,			// 00000101
+		&&handle_pt_opc_tnt_8,		// 00000110
+		&&handle_pt_opc_cyc,			// 00000111
+		&&handle_pt_opc_tnt_8,		// 00001000
+		&&handle_pt_opc_bad,			// 00001001
+		&&handle_pt_opc_tnt_8,		// 00001010
+		&&handle_pt_opc_cyc,			// 00001011
+		&&handle_pt_opc_tnt_8,		// 00001100
+		&&handle_pt_opc_tip,			// 00001101
+		&&handle_pt_opc_tnt_8,		// 00001110
+		&&handle_pt_opc_cyc,			// 00001111
+		&&handle_pt_opc_tnt_8,		// 00010000
+		&&handle_pt_opc_tip_pge,	// 00010001
+		&&handle_pt_opc_tnt_8,		// 00010010
+		&&handle_pt_opc_cyc,			// 00010011
+		&&handle_pt_opc_tnt_8,		// 00010100
+		&&handle_pt_opc_bad,			// 00010101
+		&&handle_pt_opc_tnt_8,		// 00010110
+		&&handle_pt_opc_cyc,			// 00010111
+		&&handle_pt_opc_tnt_8,		// 00011000
+		&&handle_pt_opc_tsc,			// 00011001
+		&&handle_pt_opc_tnt_8,		// 00011010
+		&&handle_pt_opc_cyc,			// 00011011
+		&&handle_pt_opc_tnt_8,		// 00011100
+		&&handle_pt_opc_fup,			// 00011101
+		&&handle_pt_opc_tnt_8,		// 00011110
+		&&handle_pt_opc_cyc,			// 00011111
+		&&handle_pt_opc_tnt_8,		// 00100000
+		&&handle_pt_opc_tip_pgd,	// 00100001
+		&&handle_pt_opc_tnt_8,		// 00100010
+		&&handle_pt_opc_cyc,			// 00100011
+		&&handle_pt_opc_tnt_8,		// 00100100
+		&&handle_pt_opc_bad,			// 00100101
+		&&handle_pt_opc_tnt_8,		// 00100110
+		&&handle_pt_opc_cyc,			// 00100111
+		&&handle_pt_opc_tnt_8,		// 00101000
+		&&handle_pt_opc_bad,			// 00101001
+		&&handle_pt_opc_tnt_8,		// 00101010
+		&&handle_pt_opc_cyc,			// 00101011
+		&&handle_pt_opc_tnt_8,		// 00101100
+		&&handle_pt_opc_tip,			// 00101101
+		&&handle_pt_opc_tnt_8,		// 00101110
+		&&handle_pt_opc_cyc,			// 00101111
+		&&handle_pt_opc_tnt_8,		// 00110000
+		&&handle_pt_opc_tip_pge,	// 00110001
+		&&handle_pt_opc_tnt_8,		// 00110010
+		&&handle_pt_opc_cyc,			// 00110011
+		&&handle_pt_opc_tnt_8,		// 00110100
+		&&handle_pt_opc_bad,			// 00110101
+		&&handle_pt_opc_tnt_8,		// 00110110
+		&&handle_pt_opc_cyc,			// 00110111
+		&&handle_pt_opc_tnt_8,		// 00111000
+		&&handle_pt_opc_bad,			// 00111001
+		&&handle_pt_opc_tnt_8,		// 00111010
+		&&handle_pt_opc_cyc,			// 00111011
+		&&handle_pt_opc_tnt_8,		// 00111100
+		&&handle_pt_opc_fup,			// 00111101
+		&&handle_pt_opc_tnt_8,		// 00111110
+		&&handle_pt_opc_cyc,			// 00111111
+		&&handle_pt_opc_tnt_8,		// 01000000
+		&&handle_pt_opc_tip_pgd,	// 01000001
+		&&handle_pt_opc_tnt_8,		// 01000010
+		&&handle_pt_opc_cyc,			// 01000011
+		&&handle_pt_opc_tnt_8,		// 01000100
+		&&handle_pt_opc_bad,			// 01000101
+		&&handle_pt_opc_tnt_8,		// 01000110
+		&&handle_pt_opc_cyc,			// 01000111
+		&&handle_pt_opc_tnt_8,		// 01001000
+		&&handle_pt_opc_bad,			// 01001001
+		&&handle_pt_opc_tnt_8,		// 01001010
+		&&handle_pt_opc_cyc,			// 01001011
+		&&handle_pt_opc_tnt_8,		// 01001100
+		&&handle_pt_opc_tip,			// 01001101
+		&&handle_pt_opc_tnt_8,		// 01001110
+		&&handle_pt_opc_cyc,			// 01001111
+		&&handle_pt_opc_tnt_8,		// 01010000
+		&&handle_pt_opc_tip_pge,	// 01010001
+		&&handle_pt_opc_tnt_8,		// 01010010
+		&&handle_pt_opc_cyc,			// 01010011
+		&&handle_pt_opc_tnt_8,		// 01010100
+		&&handle_pt_opc_bad,			// 01010101
+		&&handle_pt_opc_tnt_8,		// 01010110
+		&&handle_pt_opc_cyc,			// 01010111
+		&&handle_pt_opc_tnt_8,		// 01011000
+		&&handle_pt_opc_mtc,			// 01011001
+		&&handle_pt_opc_tnt_8,		// 01011010
+		&&handle_pt_opc_cyc,			// 01011011
+		&&handle_pt_opc_tnt_8,		// 01011100
+		&&handle_pt_opc_fup,			// 01011101
+		&&handle_pt_opc_tnt_8,		// 01011110
+		&&handle_pt_opc_cyc,			// 01011111
+		&&handle_pt_opc_tnt_8,		// 01100000
+		&&handle_pt_opc_tip_pgd,	// 01100001
+		&&handle_pt_opc_tnt_8,		// 01100010
+		&&handle_pt_opc_cyc,			// 01100011
+		&&handle_pt_opc_tnt_8,		// 01100100
+		&&handle_pt_opc_bad,			// 01100101
+		&&handle_pt_opc_tnt_8,		// 01100110
+		&&handle_pt_opc_cyc,			// 01100111
+		&&handle_pt_opc_tnt_8,		// 01101000
+		&&handle_pt_opc_bad,			// 01101001
+		&&handle_pt_opc_tnt_8,		// 01101010
+		&&handle_pt_opc_cyc,			// 01101011
+		&&handle_pt_opc_tnt_8,		// 01101100
+		&&handle_pt_opc_tip,			// 01101101
+		&&handle_pt_opc_tnt_8,		// 01101110
+		&&handle_pt_opc_cyc,			// 01101111
+		&&handle_pt_opc_tnt_8,		// 01110000
+		&&handle_pt_opc_tip_pge,	// 01110001
+		&&handle_pt_opc_tnt_8,		// 01110010
+		&&handle_pt_opc_cyc,			// 01110011
+		&&handle_pt_opc_tnt_8,		// 01110100
+		&&handle_pt_opc_bad,			// 01110101
+		&&handle_pt_opc_tnt_8,		// 01110110
+		&&handle_pt_opc_cyc,			// 01110111
+		&&handle_pt_opc_tnt_8,		// 01111000
+		&&handle_pt_opc_bad,			// 01111001
+		&&handle_pt_opc_tnt_8,		// 01111010
+		&&handle_pt_opc_cyc,			// 01111011
+		&&handle_pt_opc_tnt_8,		// 01111100
+		&&handle_pt_opc_fup,			// 01111101
+		&&handle_pt_opc_tnt_8,		// 01111110
+		&&handle_pt_opc_cyc,			// 01111111
+		&&handle_pt_opc_tnt_8,		// 10000000
+		&&handle_pt_opc_tip_pgd,	// 10000001
+		&&handle_pt_opc_tnt_8,		// 10000010
+		&&handle_pt_opc_cyc,			// 10000011
+		&&handle_pt_opc_tnt_8,		// 10000100
+		&&handle_pt_opc_bad,			// 10000101
+		&&handle_pt_opc_tnt_8,		// 10000110
+		&&handle_pt_opc_cyc,			// 10000111
+		&&handle_pt_opc_tnt_8,		// 10001000
+		&&handle_pt_opc_bad,			// 10001001
+		&&handle_pt_opc_tnt_8,		// 10001010
+		&&handle_pt_opc_cyc,			// 10001011
+		&&handle_pt_opc_tnt_8,		// 10001100
+		&&handle_pt_opc_tip,			// 10001101
+		&&handle_pt_opc_tnt_8,		// 10001110
+		&&handle_pt_opc_cyc,			// 10001111
+		&&handle_pt_opc_tnt_8,		// 10010000
+		&&handle_pt_opc_tip_pge,	// 10010001
+		&&handle_pt_opc_tnt_8,		// 10010010
+		&&handle_pt_opc_cyc,			// 10010011
+		&&handle_pt_opc_tnt_8,		// 10010100
+		&&handle_pt_opc_bad,			// 10010101
+		&&handle_pt_opc_tnt_8,		// 10010110
+		&&handle_pt_opc_cyc,			// 10010111
+		&&handle_pt_opc_tnt_8,		// 10011000
+		&&handle_pt_opc_mode,		// 10011001
+		&&handle_pt_opc_tnt_8,		// 10011010
+		&&handle_pt_opc_cyc,			// 10011011
+		&&handle_pt_opc_tnt_8,		// 10011100
+		&&handle_pt_opc_fup,			// 10011101
+		&&handle_pt_opc_tnt_8,		// 10011110
+		&&handle_pt_opc_cyc,			// 10011111
+		&&handle_pt_opc_tnt_8,		// 10100000
+		&&handle_pt_opc_tip_pgd,	// 10100001
+		&&handle_pt_opc_tnt_8,		// 10100010
+		&&handle_pt_opc_cyc,			// 10100011
+		&&handle_pt_opc_tnt_8,		// 10100100
+		&&handle_pt_opc_bad,			// 10100101
+		&&handle_pt_opc_tnt_8,		// 10100110
+		&&handle_pt_opc_cyc,			// 10100111
+		&&handle_pt_opc_tnt_8,		// 10101000
+		&&handle_pt_opc_bad,			// 10101001
+		&&handle_pt_opc_tnt_8,		// 10101010
+		&&handle_pt_opc_cyc,			// 10101011
+		&&handle_pt_opc_tnt_8,		// 10101100
+		&&handle_pt_opc_tip,			// 10101101
+		&&handle_pt_opc_tnt_8,		// 10101110
+		&&handle_pt_opc_cyc,			// 10101111
+		&&handle_pt_opc_tnt_8,		// 10110000
+		&&handle_pt_opc_tip_pge,	// 10110001
+		&&handle_pt_opc_tnt_8,		// 10110010
+		&&handle_pt_opc_cyc,			// 10110011
+		&&handle_pt_opc_tnt_8,		// 10110100
+		&&handle_pt_opc_bad,			// 10110101
+		&&handle_pt_opc_tnt_8,		// 10110110
+		&&handle_pt_opc_cyc,			// 10110111
+		&&handle_pt_opc_tnt_8,		// 10111000
+		&&handle_pt_opc_bad,			// 10111001
+		&&handle_pt_opc_tnt_8,		// 10111010
+		&&handle_pt_opc_cyc,			// 10111011
+		&&handle_pt_opc_tnt_8,		// 10111100
+		&&handle_pt_opc_fup,			// 10111101
+		&&handle_pt_opc_tnt_8,		// 10111110
+		&&handle_pt_opc_cyc,			// 10111111
+		&&handle_pt_opc_tnt_8,		// 11000000
+		&&handle_pt_opc_tip_pgd,	// 11000001
+		&&handle_pt_opc_tnt_8,		// 11000010
+		&&handle_pt_opc_cyc,			// 11000011
+		&&handle_pt_opc_tnt_8,		// 11000100
+		&&handle_pt_opc_bad,			// 11000101
+		&&handle_pt_opc_tnt_8,		// 11000110
+		&&handle_pt_opc_cyc,			// 11000111
+		&&handle_pt_opc_tnt_8,		// 11001000
+		&&handle_pt_opc_bad,			// 11001001
+		&&handle_pt_opc_tnt_8,		// 11001010
+		&&handle_pt_opc_cyc,			// 11001011
+		&&handle_pt_opc_tnt_8,		// 11001100
+		&&handle_pt_opc_tip,			// 11001101
+		&&handle_pt_opc_tnt_8,		// 11001110
+		&&handle_pt_opc_cyc,			// 11001111
+		&&handle_pt_opc_tnt_8,		// 11010000
+		&&handle_pt_opc_tip_pge,	// 11010001
+		&&handle_pt_opc_tnt_8,		// 11010010
+		&&handle_pt_opc_cyc,			// 11010011
+		&&handle_pt_opc_tnt_8,		// 11010100
+		&&handle_pt_opc_bad,			// 11010101
+		&&handle_pt_opc_tnt_8,		// 11010110
+		&&handle_pt_opc_cyc,			// 11010111
+		&&handle_pt_opc_tnt_8,		// 11011000
+		&&handle_pt_opc_bad,			// 11011001
+		&&handle_pt_opc_tnt_8,		// 11011010
+		&&handle_pt_opc_cyc,			// 11011011
+		&&handle_pt_opc_tnt_8,		// 11011100
+		&&handle_pt_opc_fup,			// 11011101
+		&&handle_pt_opc_tnt_8,		// 11011110
+		&&handle_pt_opc_cyc,			// 11011111
+		&&handle_pt_opc_tnt_8,		// 11100000
+		&&handle_pt_opc_tip_pgd,	// 11100001
+		&&handle_pt_opc_tnt_8,		// 11100010
+		&&handle_pt_opc_cyc,			// 11100011
+		&&handle_pt_opc_tnt_8,		// 11100100
+		&&handle_pt_opc_bad,			// 11100101
+		&&handle_pt_opc_tnt_8,		// 11100110
+		&&handle_pt_opc_cyc,			// 11100111
+		&&handle_pt_opc_tnt_8,		// 11101000
+		&&handle_pt_opc_bad,			// 11101001
+		&&handle_pt_opc_tnt_8,		// 11101010
+		&&handle_pt_opc_cyc,			// 11101011
+		&&handle_pt_opc_tnt_8,		// 11101100
+		&&handle_pt_opc_tip,			// 11101101
+		&&handle_pt_opc_tnt_8,		// 11101110
+		&&handle_pt_opc_cyc,			// 11101111
+		&&handle_pt_opc_tnt_8,		// 11110000
+		&&handle_pt_opc_tip_pge,	// 11110001
+		&&handle_pt_opc_tnt_8,		// 11110010
+		&&handle_pt_opc_cyc,			// 11110011
+		&&handle_pt_opc_tnt_8,		// 11110100
+		&&handle_pt_opc_bad,			// 11110101
+		&&handle_pt_opc_tnt_8,		// 11110110
+		&&handle_pt_opc_cyc,			// 11110111
+		&&handle_pt_opc_tnt_8,		// 11111000
+		&&handle_pt_opc_bad,			// 11111001
+		&&handle_pt_opc_tnt_8,		// 11111010
+		&&handle_pt_opc_cyc,			// 11111011
+		&&handle_pt_opc_tnt_8,		// 11111100
+		&&handle_pt_opc_fup,			// 11111101
+		&&handle_pt_opc_tnt_8,		// 11111110
+		&&handle_pt_opc_cyc,			// 11111111
+};
+
+static void *pt_dispatch_level_2[256] = {
+		&&handle_pt_ext_bad,			// 00000000
+		&&handle_pt_ext_bad,	// 00000001
+		&&handle_pt_ext_bad,			// 00000010
+		&&handle_pt_ext_cbr,			// 00000011
+		&&handle_pt_ext_bad,		// 00000100
+		&&handle_pt_ext_bad,		// 00000101
+		&&handle_pt_ext_bad,		// 00000110
+		&&handle_pt_ext_bad,			// 00000111
+		&&handle_pt_ext_bad,		// 00001000
+		&&handle_pt_ext_bad,		// 00001001
+		&&handle_pt_ext_bad,		// 00001010
+		&&handle_pt_ext_bad,			// 00001011
+		&&handle_pt_ext_bad,		// 00001100
+		&&handle_pt_ext_bad,			// 00001101
+		&&handle_pt_ext_bad,		// 00001110
+		&&handle_pt_ext_bad,			// 00001111
+		&&handle_pt_ext_bad,		// 00010000
+		&&handle_pt_ext_bad,	// 00010001
+		&&handle_pt_ext_ptw,		// 00010010
+		&&handle_pt_ext_bad,			// 00010011
+		&&handle_pt_ext_bad,		// 00010100
+		&&handle_pt_ext_bad,		// 00010101
+		&&handle_pt_ext_bad,		// 00010110
+		&&handle_pt_ext_bad,			// 00010111
+		&&handle_pt_ext_bad,		// 00011000
+		&&handle_pt_ext_bad,			// 00011001
+		&&handle_pt_ext_bad,		// 00011010
+		&&handle_pt_ext_bad,			// 00011011
+		&&handle_pt_ext_bad,		// 00011100
+		&&handle_pt_ext_bad,	// 00011101
+		&&handle_pt_ext_bad,		// 00011110
+		&&handle_pt_ext_bad,			// 00011111
+		&&handle_pt_ext_bad,		// 00100000
+		&&handle_pt_ext_bad,	// 00100001
+		&&handle_pt_ext_pwre,		// 00100010
+		&&handle_pt_ext_psbend,			// 00100011
+		&&handle_pt_ext_bad,		// 00100100
+		&&handle_pt_ext_bad,		// 00100101
+		&&handle_pt_ext_bad,		// 00100110
+		&&handle_pt_ext_bad,			// 00100111
+		&&handle_pt_ext_bad,		// 00101000
+		&&handle_pt_ext_bad,		// 00101001
+		&&handle_pt_ext_bad,		// 00101010
+		&&handle_pt_ext_bad,			// 00101011
+		&&handle_pt_ext_bad,		// 00101100
+		&&handle_pt_ext_bad,			// 00101101
+		&&handle_pt_ext_bad,		// 00101110
+		&&handle_pt_ext_bad,			// 00101111
+		&&handle_pt_ext_bad,		// 00110000
+		&&handle_pt_ext_bad,	// 00110001
+		&&handle_pt_ext_ptw,		// 00110010
+		&&handle_pt_ext_bad,			// 00110011
+		&&handle_pt_ext_bad,		// 00110100
+		&&handle_pt_ext_bad,		// 00110101
+		&&handle_pt_ext_bad,		// 00110110
+		&&handle_pt_ext_bad,			// 00110111
+		&&handle_pt_ext_bad,		// 00111000
+		&&handle_pt_ext_bad,		// 00111001
+		&&handle_pt_ext_bad,		// 00111010
+		&&handle_pt_ext_bad,			// 00111011
+		&&handle_pt_ext_bad,		// 00111100
+		&&handle_pt_ext_bad,	// 00111101
+		&&handle_pt_ext_bad,		// 00111110
+		&&handle_pt_ext_bad,			// 00111111
+		&&handle_pt_ext_bad,		// 01000000
+		&&handle_pt_ext_bad,	// 01000001
+		&&handle_pt_ext_bad,		// 01000010
+		&&handle_pt_ext_pip,			// 01000011
+		&&handle_pt_ext_bad,		// 01000100
+		&&handle_pt_ext_bad,		// 01000101
+		&&handle_pt_ext_bad,		// 01000110
+		&&handle_pt_ext_bad,			// 01000111
+		&&handle_pt_ext_bad,		// 01001000
+		&&handle_pt_ext_bad,		// 01001001
+		&&handle_pt_ext_bad,		// 01001010
+		&&handle_pt_ext_bad,			// 01001011
+		&&handle_pt_ext_bad,		// 01001100
+		&&handle_pt_ext_bad,			// 01001101
+		&&handle_pt_ext_bad,		// 01001110
+		&&handle_pt_ext_bad,			// 01001111
+		&&handle_pt_ext_bad,		// 01010000
+		&&handle_pt_ext_bad,	// 01010001
+		&&handle_pt_ext_ptw,		// 01010010
+		&&handle_pt_ext_bad,			// 01010011
+		&&handle_pt_ext_bad,		// 01010100
+		&&handle_pt_ext_bad,		// 01010101
+		&&handle_pt_ext_bad,		// 01010110
+		&&handle_pt_ext_bad,			// 01010111
+		&&handle_pt_ext_bad,		// 01011000
+		&&handle_pt_ext_bad,			// 01011001
+		&&handle_pt_ext_bad,		// 01011010
+		&&handle_pt_ext_bad,			// 01011011
+		&&handle_pt_ext_bad,		// 01011100
+		&&handle_pt_ext_bad,	// 01011101
+		&&handle_pt_ext_bad,		// 01011110
+		&&handle_pt_ext_bad,			// 01011111
+		&&handle_pt_ext_bad,		// 01100000
+		&&handle_pt_ext_bad,	// 01100001
+		&&handle_pt_ext_exstop,		// 01100010
+		&&handle_pt_ext_bad,			// 01100011
+		&&handle_pt_ext_bad,		// 01100100
+		&&handle_pt_ext_bad,		// 01100101
+		&&handle_pt_ext_bad,		// 01100110
+		&&handle_pt_ext_bad,			// 01100111
+		&&handle_pt_ext_bad,		// 01101000
+		&&handle_pt_ext_bad,		// 01101001
+		&&handle_pt_ext_bad,		// 01101010
+		&&handle_pt_ext_bad,			// 01101011
+		&&handle_pt_ext_bad,		// 01101100
+		&&handle_pt_ext_bad,			// 01101101
+		&&handle_pt_ext_bad,		// 01101110
+		&&handle_pt_ext_bad,			// 01101111
+		&&handle_pt_ext_bad,		// 01110000
+		&&handle_pt_ext_bad,	// 01110001
+		&&handle_pt_ext_ptw,		// 01110010
+		&&handle_pt_ext_tma,			// 01110011
+		&&handle_pt_ext_bad,		// 01110100
+		&&handle_pt_ext_bad,		// 01110101
+		&&handle_pt_ext_bad,		// 01110110
+		&&handle_pt_ext_bad,			// 01110111
+		&&handle_pt_ext_bad,		// 01111000
+		&&handle_pt_ext_bad,		// 01111001
+		&&handle_pt_ext_bad,		// 01111010
+		&&handle_pt_ext_bad,			// 01111011
+		&&handle_pt_ext_bad,		// 01111100
+		&&handle_pt_ext_bad,	// 01111101
+		&&handle_pt_ext_bad,		// 01111110
+		&&handle_pt_ext_bad,			// 01111111
+		&&handle_pt_ext_bad,		// 10000000
+		&&handle_pt_ext_bad,	// 10000001
+		&&handle_pt_ext_psb,		// 10000010
+		&&handle_pt_ext_stop,			// 10000011
+		&&handle_pt_ext_bad,		// 10000100
+		&&handle_pt_ext_bad,		// 10000101
+		&&handle_pt_ext_bad,		// 10000110
+		&&handle_pt_ext_bad,			// 10000111
+		&&handle_pt_ext_bad,		// 10001000
+		&&handle_pt_ext_bad,		// 10001001
+		&&handle_pt_ext_bad,		// 10001010
+		&&handle_pt_ext_bad,			// 10001011
+		&&handle_pt_ext_bad,		// 10001100
+		&&handle_pt_ext_bad,			// 10001101
+		&&handle_pt_ext_bad,		// 10001110
+		&&handle_pt_ext_bad,			// 10001111
+		&&handle_pt_ext_bad,		// 10010000
+		&&handle_pt_ext_bad,	// 10010001
+		&&handle_pt_ext_ptw,		// 10010010
+		&&handle_pt_ext_bad,			// 10010011
+		&&handle_pt_ext_bad,		// 10010100
+		&&handle_pt_ext_bad,		// 10010101
+		&&handle_pt_ext_bad,		// 10010110
+		&&handle_pt_ext_bad,			// 10010111
+		&&handle_pt_ext_bad,		// 10011000
+		&&handle_pt_ext_bad,		// 10011001
+		&&handle_pt_ext_bad,		// 10011010
+		&&handle_pt_ext_bad,			// 10011011
+		&&handle_pt_ext_bad,		// 10011100
+		&&handle_pt_ext_bad,	// 10011101
+		&&handle_pt_ext_bad,		// 10011110
+		&&handle_pt_ext_bad,			// 10011111
+		&&handle_pt_ext_bad,		// 10100000
+		&&handle_pt_ext_bad,	// 10100001
+		&&handle_pt_ext_pwrx,		// 10100010
+		&&handle_pt_ext_tnt_64,			// 10100011
+		&&handle_pt_ext_bad,		// 10100100
+		&&handle_pt_ext_bad,		// 10100101
+		&&handle_pt_ext_bad,		// 10100110
+		&&handle_pt_ext_bad,			// 10100111
+		&&handle_pt_ext_bad,		// 10101000
+		&&handle_pt_ext_bad,		// 10101001
+		&&handle_pt_ext_bad,		// 10101010
+		&&handle_pt_ext_bad,			// 10101011
+		&&handle_pt_ext_bad,		// 10101100
+		&&handle_pt_ext_bad,			// 10101101
+		&&handle_pt_ext_bad,		// 10101110
+		&&handle_pt_ext_bad,			// 10101111
+		&&handle_pt_ext_bad,		// 10110000
+		&&handle_pt_ext_bad,	// 10110001
+		&&handle_pt_ext_ptw,		// 10110010
+		&&handle_pt_ext_bad,			// 10110011
+		&&handle_pt_ext_bad,		// 10110100
+		&&handle_pt_ext_bad,		// 10110101
+		&&handle_pt_ext_bad,		// 10110110
+		&&handle_pt_ext_bad,			// 10110111
+		&&handle_pt_ext_bad,		// 10111000
+		&&handle_pt_ext_bad,		// 10111001
+		&&handle_pt_ext_bad,		// 10111010
+		&&handle_pt_ext_bad,			// 10111011
+		&&handle_pt_ext_bad,		// 10111100
+		&&handle_pt_ext_bad,	// 10111101
+		&&handle_pt_ext_bad,		// 10111110
+		&&handle_pt_ext_bad,			// 10111111
+		&&handle_pt_ext_bad,		// 11000000
+		&&handle_pt_ext_bad,	// 11000001
+		&&handle_pt_ext_mwait,		// 11000010
+		&&handle_pt_ext_ext2,			// 11000011
+		&&handle_pt_ext_bad,		// 11000100
+		&&handle_pt_ext_bad,		// 11000101
+		&&handle_pt_ext_bad,		// 11000110
+		&&handle_pt_ext_bad,			// 11000111
+		&&handle_pt_ext_vmcs,		// 11001000
+		&&handle_pt_ext_bad,		// 11001001
+		&&handle_pt_ext_bad,		// 11001010
+		&&handle_pt_ext_bad,			// 11001011
+		&&handle_pt_ext_bad,		// 11001100
+		&&handle_pt_ext_bad,			// 11001101
+		&&handle_pt_ext_bad,		// 11001110
+		&&handle_pt_ext_bad,			// 11001111
+		&&handle_pt_ext_bad,		// 11010000
+		&&handle_pt_ext_bad,	// 11010001
+		&&handle_pt_ext_ptw,		// 11010010
+		&&handle_pt_ext_bad,			// 11010011
+		&&handle_pt_ext_bad,		// 11010100
+		&&handle_pt_ext_bad,		// 11010101
+		&&handle_pt_ext_bad,		// 11010110
+		&&handle_pt_ext_bad,			// 11010111
+		&&handle_pt_ext_bad,		// 11011000
+		&&handle_pt_ext_bad,		// 11011001
+		&&handle_pt_ext_bad,		// 11011010
+		&&handle_pt_ext_bad,			// 11011011
+		&&handle_pt_ext_bad,		// 11011100
+		&&handle_pt_ext_bad,	// 11011101
+		&&handle_pt_ext_bad,		// 11011110
+		&&handle_pt_ext_bad,			// 11011111
+		&&handle_pt_ext_bad,		// 11100000
+		&&handle_pt_ext_bad,	// 11100001
+		&&handle_pt_ext_exstop_ip,		// 11100010
+		&&handle_pt_ext_bad,			// 11100011
+		&&handle_pt_ext_bad,		// 11100100
+		&&handle_pt_ext_bad,		// 11100101
+		&&handle_pt_ext_bad,		// 11100110
+		&&handle_pt_ext_bad,			// 11100111
+		&&handle_pt_ext_bad,		// 11101000
+		&&handle_pt_ext_bad,		// 11101001
+		&&handle_pt_ext_bad,		// 11101010
+		&&handle_pt_ext_bad,			// 11101011
+		&&handle_pt_ext_bad,		// 11101100
+		&&handle_pt_ext_bad,			// 11101101
+		&&handle_pt_ext_bad,		// 11101110
+		&&handle_pt_ext_bad,			// 11101111
+		&&handle_pt_ext_bad,		// 11110000
+		&&handle_pt_ext_bad,	// 11110001
+		&&handle_pt_ext_ptw,		// 11110010
+		&&handle_pt_ext_ovf,			// 11110011
+		&&handle_pt_ext_bad,		// 11110100
+		&&handle_pt_ext_bad,		// 11110101
+		&&handle_pt_ext_bad,		// 11110110
+		&&handle_pt_ext_bad,			// 11110111
+		&&handle_pt_ext_bad,		// 11111000
+		&&handle_pt_ext_bad,		// 11111001
+		&&handle_pt_ext_bad,		// 11111010
+		&&handle_pt_ext_bad,			// 11111011
+		&&handle_pt_ext_bad,		// 11111100
+		&&handle_pt_ext_bad,	// 11111101
+		&&handle_pt_ext_bad,		// 11111110
+		&&handle_pt_ext_bad,		// 11111111
+};
+#endif
+
 	const struct pt_config *config;
 	const uint8_t *pos, *begin, *end;
 	uint8_t opc, ext, ext2;
@@ -788,95 +1310,134 @@ static int pt_pkt_decode(struct pt_packet_decoder *decoder,
 		return -pte_eos;
 
 	opc = *pos++;
+
+	//printf("level_1: %x\n", opc);
+#ifdef USE_DISPATCH
+	goto *pt_dispatch_level_1[opc];
+#endif
 	switch (opc) {
 	default:
 		/* Check opcodes that require masking. */
 		if ((opc & pt_opm_cyc) == pt_opc_cyc)
+			handle_pt_opc_cyc:
 			return pt_pkt_decode_cyc(decoder, packet);
 
 		if ((opc & pt_opm_tnt_8) == pt_opc_tnt_8)
+			handle_pt_opc_tnt_8:
 			return pt_pkt_decode_tnt_8(decoder, packet);
 
 		if ((opc & pt_opm_fup) == pt_opc_fup)
+			handle_pt_opc_fup:
 			return pt_pkt_decode_fup(decoder, packet);
 
 		if ((opc & pt_opm_tip) == pt_opc_tip)
+			handle_pt_opc_tip:
 			return pt_pkt_decode_tip(decoder, packet);
 
 		if ((opc & pt_opm_tip) == pt_opc_tip_pge)
+			handle_pt_opc_tip_pge:
 			return pt_pkt_decode_tip_pge(decoder, packet);
 
 		if ((opc & pt_opm_tip) == pt_opc_tip_pgd)
+			handle_pt_opc_tip_pgd:
 			return pt_pkt_decode_tip_pgd(decoder, packet);
 
+		handle_pt_opc_bad:
 		return pt_pkt_decode_unknown(decoder, packet);
 
 	case pt_opc_mode:
+		handle_pt_opc_mode:
 		return pt_pkt_decode_mode(decoder, packet);
 
 	case pt_opc_mtc:
+		handle_pt_opc_mtc:
 		return pt_pkt_decode_mtc(decoder, packet);
 
 	case pt_opc_tsc:
+		handle_pt_opc_tsc:
 		return pt_pkt_decode_tsc(decoder, packet);
 
 	case pt_opc_pad:
+		handle_pt_opc_pad:
 		return pt_pkt_decode_pad(decoder, packet);
 
 	case pt_opc_ext:
+		handle_pt_opc_ext:
 		if (end <= pos)
 			return -pte_eos;
 
 		ext = *pos++;
+
+		//printf("level_2: %x\n", ext);
+#ifdef USE_DISPATCH
+		goto *pt_dispatch_level_2[ext];
+#endif
 		switch (ext) {
 		default:
 			/* Check opcodes that require masking. */
 			if ((ext & pt_opm_ptw) == pt_ext_ptw)
+				handle_pt_ext_ptw:
 				return pt_pkt_decode_ptw(decoder, packet);
 
+			handle_pt_ext_bad:
 			return pt_pkt_decode_unknown(decoder, packet);
 
 		case pt_ext_psb:
+			handle_pt_ext_psb:
 			return pt_pkt_decode_psb(decoder, packet);
 
 		case pt_ext_ovf:
+			handle_pt_ext_ovf:
 			return pt_pkt_decode_ovf(decoder, packet);
 
 		case pt_ext_psbend:
+			handle_pt_ext_psbend:
 			return pt_pkt_decode_psbend(decoder, packet);
 
 		case pt_ext_cbr:
+			handle_pt_ext_cbr:
 			return pt_pkt_decode_cbr(decoder, packet);
 
 		case pt_ext_tma:
+			handle_pt_ext_tma:
 			return pt_pkt_decode_tma(decoder, packet);
 
 		case pt_ext_pip:
+			handle_pt_ext_pip:
 			return pt_pkt_decode_pip(decoder, packet);
 
 		case pt_ext_vmcs:
+			handle_pt_ext_vmcs:
 			return pt_pkt_decode_vmcs(decoder, packet);
 
 		case pt_ext_exstop:
+			handle_pt_ext_exstop:
 		case pt_ext_exstop_ip:
+			handle_pt_ext_exstop_ip:
 			return pt_pkt_decode_exstop(decoder, packet);
 
 		case pt_ext_mwait:
+			handle_pt_ext_mwait:
 			return pt_pkt_decode_mwait(decoder, packet);
 
 		case pt_ext_pwre:
+			handle_pt_ext_pwre:
 			return pt_pkt_decode_pwre(decoder, packet);
 
 		case pt_ext_pwrx:
+			handle_pt_ext_pwrx:
 			return pt_pkt_decode_pwrx(decoder, packet);
 
 		case pt_ext_stop:
+			handle_pt_ext_stop:
 			return pt_pkt_decode_stop(decoder, packet);
 
 		case pt_ext_tnt_64:
+			handle_pt_ext_tnt_64:
 			return pt_pkt_decode_tnt_64(decoder, packet);
 
 		case pt_ext_ext2:
+			handle_pt_ext_ext2:
 			if (end <= pos)
 				return -pte_eos;
 
